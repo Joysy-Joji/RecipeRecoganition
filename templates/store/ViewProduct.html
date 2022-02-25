@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<form method="post" action="/SearchProduct">
+<table width="501" border="1">
+<caption>
+VIEW PRODUCT
+</caption>
+<tr>
+<td width="518"><label>Name</label>
+<input type="text" name="textfield"/></td>
+<td width="167"><button>Search</button></td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+<table width="501" height="160" border="1">
+  <tr>
+    <td width="40" height="46">S.No</td>
+    <td width="160">Name</td>
+    <td width="60">Price</td>
+      <td width="60">Stock</td>
+
+	
+	<td width="44"> Image</td>
+      <td width="82">Made Date </td>
+	
+   
+    <th width="75" colspan="2">Action</th>
+
+  </tr>
+ 
+ {% for i in data %}
+        <tr>
+            <td>&nbsp;{{ loop.index }}</td>
+            <td>{{ i['name']  }}</td>
+            <td>&nbsp;{{ i['price']  }}</td>
+ <td>&nbsp;{{ i['stock']  }}</td>
+
+            <td><img src="{{i['image']}}"></td>
+             <td>&nbsp;{{ i['made_date']  }}</td>
+
+
+
+
+                  <td><p><a href="/EditProduct/{{ i['product_id']  }}">Edit</a><br/>
+
+                <a href="/deleteProduct/{{ i['product_id']  }}">Delete</a><br/>
+            </p></td>
+        </tr>
+
+
+
+        {% endfor %}
+</table>
+</form>
+</body>
+
+
+</html>

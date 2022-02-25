@@ -1,0 +1,78 @@
+{% extends 'admin/admin_index.html' %}
+{% block body %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<form method="post" action="/SearchComplaints" >
+<table width="501" border="1" class="table table-dark mt-5">
+<caption>VIEW COMPLAINTS</caption>
+<tr>
+  <td width="900"><label>From Date</label>
+    <input name="date" type="date"  name="textfield" class="form-control"  /></td>
+  <td width="899"><label>To Date</label>
+  <input name="date" type="date" name="textfield2" class="form-control"  /></td>
+<td width="167"><button>SEARCH</button></td></tr>
+</table>
+
+
+<table width="501" height="160" border="1" class="table table-dark mt-5">
+  <tr>
+    <td width="40" height="46">S.No</td>
+    <td width="160">Complaints</td>
+	 <td width="160">User Name</td>
+	  <td width="160">User Email</td>
+
+	<td width="60">Status</td>
+	 <td width="260">Date</td>
+	<td width="60">Action</td>
+	
+   
+    
+
+  </tr>
+ 
+ {% for i in data %}
+  <tr>
+    <td>{{ loop.index }}</td>
+
+	 <td>{{ i['complaint']  }}</td>
+       <td>{{ i['name']  }}</td>
+      <td>{{ i['email']  }}</td>
+       <td>{{ i['status']  }}</td>
+  <td>{{ i['date']  }}</td>
+       <td><p><a href="" class="btn btn-primary">Reply</a><br />
+
+     </p></td>
+  </tr>
+     {% endfor %}
+<!--    <td><p><a href="">Reply</a><br />-->
+<!--       -->
+<!--     </p></td>-->
+  </tr>
+</table>
+    </form>
+</body>
+</html>
+<style>
+    button{
+    padding:12px;
+    border:none;
+    border-radius:4px;
+    background:#069;
+    color:#fff;
+    outline:none;
+    float:right;
+    cursor:pointer;
+    font-family: 'Comfortaa', cursive;
+    margin-left:20px;
+  }
+</style>
+
+
+{% endblock %}
