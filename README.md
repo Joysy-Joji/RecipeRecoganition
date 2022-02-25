@@ -1,4 +1,4 @@
-# RecipeRecoganition
+# Recipe Recoganition Using CNN Algorithm
 JOYSY  KMC19MCA005 
 
 
