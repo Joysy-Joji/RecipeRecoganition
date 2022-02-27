@@ -269,9 +269,9 @@ def SearchStore():
 @app.route('/ViewStore')
 def ViewStore():
     db = Db()
-    qry = "select * from storeregister"
+    qry = "select * from storeregister order by store_id desc"
     res = db.select(qry)
-
+    print(qry)
     return render_template('admin/ViewStore.html',data=res)
 @app.route('/ViewStore_post',methods=['post'])
 def ViewStore_post():
@@ -316,6 +316,7 @@ def Storeregistration():
 
 @app.route('/Storeregistration_post',methods=['post'])
 def Storeregistration_post():
+    type="store"
     name = request.form['textfield']
     place = request.form['textfield2']
     post = request.form['textfield3']
@@ -327,19 +328,23 @@ def Storeregistration_post():
     import datetime
     dt=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     image.save(staticpath+"store\\"+dt+".jpg")
-    path="/static/store"+dt+".jpg"
+    path="/static/store/"+dt+".jpg"
     db=Db()
-    qry="insert into storeregister(name,place,post,pin,mobilenumber,email,password,image)values('"+name+"','"+place+"','"+post+"','"+pin+"','"+mobilenumber+"','"+email+"','"+password+"','"+path+"')"
+    q="insert into login(username,password,type)values('"+name+"','"+password+"','"+type+"')"
+    lid = db.insert(q)
+    qry="insert into storeregister(name,place,post,pin,mobilenumber,email,password,image,login_id)values('"+name+"','"+place+"','"+post+"','"+pin+"','"+mobilenumber+"','"+email+"','"+password+"','"+path+"','"+str(lid)+"')"
     res=db.insert(qry)
-    return render_template('store/store_index.html')
 
+    # return render_template('store/store_index.html')
+    return '''<script> alert('Registered Succusfully '); window.location='/storehome'</script>'''
 
 @app.route('/deleteProduct/<id>')
 def deleteProduct(id):
     db = Db()
     qry = "delete from product where product_id='" + str(id) + "'"
     res = db.delete(qry)
-    return 'ok'
+
+    return render_template('store/ViewProduct.html')
 
 
 
@@ -358,12 +363,13 @@ def AddProduct_post():
     import datetime
     dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     image.save(staticpath + "store\\" + dt + ".jpg")
-    path = "/static/store" + dt + ".jpg"
+    path = "/static/store/"+ dt + ".jpg"
     db = Db()
     qry = "insert into product(name,price,stock,made_date,image)values('" + name + "','" + price + "','" + stock + "','" + made_date + "','" + path + "')"
     res = db.insert(qry)
+    return '''<script> alert('Added Succusfully '); window.location='/storehome'</script>'''
 
-    return 'ok'
+
 
 @app.route('/SearchProduct',methods=['post'])
 def SearchProduct():
@@ -371,7 +377,7 @@ def SearchProduct():
     db = Db()
     qry = "select * from product where name like '%"+n+"%'"
     res = db.select(qry)
-    print(res)
+
     return render_template('store/ViewProduct.html', data=res)
 
 @app.route('/ViewProduct')
