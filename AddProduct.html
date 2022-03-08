@@ -1,0 +1,161 @@
+{% extends 'store/store_index.html' %}
+{% block body %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<br>
+<br>
+<div id="main">
+<!--    <button ><a href="/storehome"  class="btn btn-danger">BACK</a></button>-->
+<form id="form8" name="form8" method="post"    action="/AddProduct_post" enctype="multipart/form-data">
+  <table width="806" height="211" border="0" align="center" >
+      <br>
+      <br>
+      <br>
+<!--    <h1 align="center">-->
+<!--    ADD PRODUCT-->
+<!--    </h1>-->
+<!--    <tr>-->
+<!--      <td class="form-control" name="textfield"><div align="center">Name</div></td>-->
+<!--       <input type="text" name="textfield" placeholder="enter name" required  pattern="[a-z A-Z ]{3,26}" />-->
+<!--    </tr>-->
+      <tr>
+      <td  name="textfield"><div align="center">Name</div></td>
+      <td><label>
+         <input type="text" name="textfield" placeholder="enter name" required />
+      </label>      </td>
+    </tr>
+    <tr>
+      <td  name="textfield2"><div align="center">Price</div></td>
+      <td><label>
+         <input type="text" name="textfield2" placeholder="enter price" required />
+      </label>      </td>
+    </tr>
+    <tr>
+      <td  name="textfield3"><div align="center">Stock</div></td>
+      <td>
+         <input type="text" name="textfield3" placeholder="enter stock" required/>
+        </td>
+    </tr>
+    <tr>
+      <td  name="textfield4"><div align="center">Made Date</div></td>
+    <td>
+      <label>
+         <input type="date" name="textfield4" placeholder="enter made in date" required />
+   </label>
+    </td>
+    </tr>
+
+    
+    <tr>
+      <td><div align="center">Image</div></td>
+      <td><label>
+        <input type="file" name="file" placeholder="image" required  />
+        </label>      </td>
+    </tr>
+    <tr>
+      <td colspan="3" align="center"><label>
+<!--        <input type="submit" name="submit"    value="ADD" />-->
+        <button>ADD</button>
+        </label>      </td>
+    </tr>
+  </table>
+</form>
+</div>
+</body>
+</html>
+
+<style>
+  body{
+    margin:0;
+    padding:0;
+    outline:none;
+    font:12px Arial;
+    font-weight:bold;
+    font-family: 'Comfortaa', cursive;
+
+background-image: url("/static/store/green.jpg");
+ background-repeat: norepeat
+    user-select:none;
+  }
+<!--  #main{-->
+<!--    width:850px;-->
+<!--    margin:auto;-->
+<!--    border:1px solid #eee;-->
+<!--    margin-top:100px;-->
+<!--    font-family: 'Comfortaa', cursive;-->
+<!--    position:relative;-->
+<!--    border-radius:5px;-->
+<!--    box-shadow: 0 0 5px #eee;-->
+<!--  }-->
+<!--  table{-->
+<!--    margin:auto;-->
+<!--    font-family: 'Comfortaa', cursive;-->
+<!--  }-->
+  td{
+    padding:10px;
+    font-family: 'Comfortaa', cursive;
+  }
+  input[type="text"], input[type="password"], input[type="file"], input[type="date"] {
+    padding:16px;
+    border-radius:3px;
+    border:none;
+    border:1px solid #eee;
+    width:405px;
+    outline:none;
+    font-family: 'Comfortaa', cursive;
+  }
+  td {
+    font-size: 20px;
+    color:white;
+  }
+  button{
+    padding:12px;
+    border:none;
+    border-radius:4px;
+    background:#069;
+    color:#fff;
+    outline:none;
+    float:right;
+    cursor:pointer;
+    font-family: 'Comfortaa', cursive;
+    margin-left:20px;
+  }
+  h2{
+    font-size: 35px;
+    font-family: 'Comfortaa', cursive;
+    color:blue;
+  }
+   h1{
+    font-size: 25px;
+    font-family: 'Comfortaa', cursive;
+    color:blue;
+  }
+  #info{
+    padding:10px;
+    border-radius:3px;
+    position:absolute;
+    top:310px;
+    left:27px;
+    color:#069;
+    display:none;
+    font-size:11px;
+  }
+  #btnRegister{
+    background:#2ecc71;
+  }
+  /*
+  #btnLogin{
+    background:#34495e;
+  }
+  #loginTable{
+    display:none;
+  }
+  */
+</style>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'store/store_index.html' %}
+{% block body %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Untitled Document</title>
+
+   <link rel="stylesheet" href="/static/sample.css">
+</head>
+
+<body>
+<div id="main">
+<form id="form8" name="form8" method="post"  action="/edit_profile_post" enctype="multipart/form-data">
+  <table width="436" height="200" border="0">
+<tr>
+  <td>
+  <img src="{{ data['image'] }}" height="150px" width="150px"></td>
+</tr>
+    <tr>
+      <td width="102">Name<input type="hidden" name="s_id" value="{{ data['store_id'] }}"></td>
+      <td width="218"><label>
+        <input type="text" name="textfield"  placeholder="enter name"  value="{{ data['name'] }}" required />
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>Place</td>
+      <td><label>
+        <input type="text" name="textfield2" placeholder="enter place" value="{{ data['place'] }}" required />
+        </label>
+      </td>
+    </tr>
+    <tr>
+       <tr>
+      <td>Post</td>
+      <td><label>
+        <input type="text" name="textfield3"  placeholder="enter post" value="{{ data['post'] }}" required />
+        </label>
+      </td>
+    </tr>
+    <tr>
+       <tr>
+      <td>Pin</td>
+      <td><label>
+        <input type="text" name="textfield4" placeholder="enter pin" value="{{ data['pin'] }}" required />
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>Mobile number </td>
+      <td><label>
+        <input type="text" name="textfield5" placeholder="enter mobile number" value="{{ data['mobilenumber'] }}" required/>
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td>Email </td>
+      <td><label>
+        <input type="text" name="textfield6" placeholder="enter email" value="{{ data['email'] }}" required/>
+        </label>
+      </td>
+    </tr>
+
+    <tr>
+      <td>Image</td>
+      <td><label>
+        <input type="file" name="file" />
+        </label>
+      </td>
+    </tr>
+
+     <tr>
+      <td colspan="3" align="center">
+      <button>SUBMIT</button>
+        </td>
+    </tr>
+
+<!--    <tr>-->
+<!--      <td colspan="3" align="center"><label>-->
+<!--        <input type="submit" name="submit"    value="REGISTER" />-->
+<!--        </label>-->
+<!--      </td>-->
+<!--    </tr>-->
+  </table>
+</form>
+</div>
+</body>
+</html>
+
+<style>
+  body{
+    margin:0;
+    padding:0;
+    outline:none;
+    font:12px Arial;
+    font-weight:bold;
+    font-family: 'Comfortaa', cursive;
+
+background-image: url("/static/store/s.jpg");
+ background-repeat: norepeat
+    user-select:none;
+  }
+  #main{
+    width:1000px;
+    margin:auto;
+    border:0px solid #eee;
+    margin-top:18px;
+    font-family: 'Comfortaa', cursive;
+    position:relative;
+    border-radius:5px;
+    box-shadow: 0 0 5px #eee;
+  }
+  table
+    margin:auto;
+    font-family: 'Comfortaa', cursive;
+  }
+  td{
+    padding:6px;
+    font-family: 'Comfortaa', cursive;
+  }
+  input[type="text"], input[type="password"], input[type="file"], input[type="date"] {
+    padding:5px;
+    border-radius:3px;
+    border:none;
+    border:1px solid #eee;
+    width:405px;
+    outline:none;
+    font-family: 'Comfortaa', cursive;
+  }
+  td {
+    font-size: 15px;
+    color:white;
+  }
+  button{
+    padding:12px;
+    border:none;
+    border-radius:4px;
+    background:#069;
+    color:#fff;
+    outline:none;
+    float:right;
+    cursor:pointer;
+    font-family: 'Comfortaa', cursive;
+    margin-left:20px;
+  }
+  h2{
+    font-size: 35px;
+    font-family: 'Comfortaa', cursive;
+    color:blue;
+  }
+   h1{
+    font-size: 25px;
+    font-family: 'Comfortaa', cursive;
+    color:blue;
+  }
+  #info{
+    padding:10px;
+    border-radius:3px;
+    position:absolute;
+    top:310px;
+    left:27px;
+    color:#069;
+    display:none;
+    font-size:11px;
+  }
+  #btnRegister{
+    background:#2ecc71;
+  }
+  /*
+  #btnLogin{
+    background:#34495e;
+  }
+  #loginTable{
+    display:none;
+  }
+  */
+</style>
+{% endblock %}

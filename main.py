@@ -1,17 +1,28 @@
-from flask import Flask,render_template,request
+from flask import Flask,render_template,request,session
 from DBConnection import Db
 app=Flask(__name__)
+app.secret_key="kk"
 staticpath="C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\"
 
 @app.route('/admin_index')
 def admin_index():
     return render_template('admin/admin_index.html')
 
+@app.route('/admin_home')
+def admin_home():
+    return render_template('admin/admin_home.html')
+
+
+@app.route('/')
+def landing():
+    return render_template('landing.html')
+
+
 @app.route('/store_index')
 def store_index():
     return render_template('store/store_index.html')
 
-@app.route('/')
+@app.route('/Login')
 def login():
     return render_template('Login.html')
 
@@ -23,6 +34,7 @@ def login_post():
     qry="select * from login where username='"+name+"' and password='"+password+"'"
     res=db.selectOne(qry)
     if res!=None:
+        session["lid"]=res["login_id"]
         if res['type']=='admin':
             return adminhome()
         elif res['type']=='store':
@@ -39,12 +51,12 @@ def login_post():
 
 @app.route('/adminhome')
 def adminhome():
-    return render_template('admin/adminhome.html')
+    return render_template('admin/admin_home.html')
 
 
 @app.route('/storehome')
 def storehome():
-    return render_template('store/store_index.html')
+    return render_template('store/store_main_home.html')
 
 
 
@@ -63,15 +75,22 @@ def SearchVegetables():
     res = db.select(qry)
     return render_template('admin/ViewVegetables.html', data=res)
 
+@app.route('/Reply')
+def reply():
+    return render_template('admin/Reply.html')
 
-
-
+# @app.route('/Reply_post',methods=['post'])
+# def Reply_post():
+#     reply = request.form['textarea']
+#
+#     db=Db()
+#     qry="insert into complaint(reply)values('"+reply+"')"
+#     res=db.insert(qry)
+#     return 'ok'
 
 @app.route('/AddVegetables')
 def AddVegetables():
    return render_template('admin/AddVegetables.html')
-
-
 @app.route('/AddVegetables_post',methods=['post'])
 def AddVegetables_post():
     name = request.form['textfield']
@@ -80,6 +99,7 @@ def AddVegetables_post():
     size = request.form['textfield4']
     texture = request.form['textfield5']
     image = request.files['file']
+    # storelid=session["lid"]
     import datetime
     dt=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     image.save(staticpath+"veg\\"+dt+".jpg")
@@ -88,7 +108,6 @@ def AddVegetables_post():
     qry="insert into vegetable(name,color,shape,size,texture,image)values('"+name+"','"+color+"','"+shape+"','"+size+"','"+texture+"','"+path+"')"
     res=db.insert(qry)
     return 'ok'
-
 @app.route('/EditVegetables/<id>')
 def EditVegetables(id):
     db=Db()
@@ -112,13 +131,6 @@ def EditVegetables_post():
     qry = "update vegetable set name='" + veg_name + "', color='" + veg_color + "',shape='" + veg_shape + "',size='" + veg_size + "',texture='" + veg_texture + "',image='" + path + "' where veg_id='"+str(id)+"' "
     res = db.update(qry)
     return 'ok'
-
-
-
-
-
-
-
 @app.route('/EditProduct/<id>')
 def EditProduct(id):
     db=Db()
@@ -132,18 +144,37 @@ def EditProduct_post():
     product_price = request.form['textfield2']
     prodcut_stock = request.form['textfield3']
     product_madedate = request.form['textfield4']
-
     image = request.files['file']
-    import datetime
-    dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    image.save(staticpath + "store\\" + dt + ".jpg")
-    path = "/static/store" + dt + ".jpg"
-    db = Db()
-    qry = "update product set name='" + product_name + "', price='" + product_price + "',stock='" + prodcut_stock + "',made_date='" + product_madedate + "',image='" + path + "' where product_id='"+str(id)+"' "
-    res = db.update(qry)
-    return 'ok'
+    # import datetime
+    # dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    # image.save(staticpath + "store\\" + dt + ".jpg")
+    # path = "/static/store" + dt + ".jpg"
+    # db = Db()
+    # qry = "update product set name='" + product_name + "', price='" + product_price + "',stock='" + prodcut_stock + "',made_date='" + product_madedate + "',image='" + path + "' where product_id='"+str(id)+"' "
+    # res = db.update(qry)
+    storeid = session["lid"]
 
-
+    if 'file' in request.files:
+        image = request.files['file']
+        if image.filename != '':
+            import datetime
+            dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+            image.save(staticpath + "store\\" + dt + ".jpg")
+            path = "/static/store/" + dt + ".jpg"
+            db = Db()
+            qry = "update product set name='" + product_name + "',price='" + product_price + "',stock='" +prodcut_stock + "',made_date='" + product_madedate + "',image='" + path + "'where product_id='" + str(id) + "'"
+            res = db.update(qry)
+            return '''<script>alert('Updated');window.location='/ViewProduct'</script>'''
+        else:
+            db = Db()
+            qry = "update product set name='" + product_name + "',price='" + product_price + "',stock='" + prodcut_stock + "',made_date='" + product_madedate + "'where product_id='" + str(id) + "'"
+            res = db.update(qry)
+            return '''<script>alert('Updated');window.location='/ViewProduct'</script>'''
+    else:
+        db = Db()
+        qry = "update product set name='" + product_name + "',price='" + product_price + "',stock='" + prodcut_stock + "',made_date='" + product_madedate +  "' where product_id='" + str(id) + "'"
+        res = db.update(qry)
+        return '''<script>alert('Updated');window.location='/ViewProduct'</script>'''
 
 
 @app.route('/EditRecipe/<id>')
@@ -185,9 +216,6 @@ def Reply_post():
     res = db.insert(qry)
 
     return 'ok'
-
-
-
 @app.route('/deleteRecipe/<id>')
 def deleteRecipe(id):
     db = Db()
@@ -234,7 +262,7 @@ def SearchComplaints():
 @app.route('/ViewComplaints')
 def ViewComplaints():
     db = Db()
-    qry = "select * from complaint"
+    qry = "SELECT * FROM  complaint INNER JOIN `user_register` ON `user_register`.`login_id`=`complaint`.`user_id`"
     res = db.select(qry)
     return render_template('admin/ViewComplaints.html',data=res)
 
@@ -264,15 +292,47 @@ def SearchStore():
     db = Db()
     qry = "select * from storeregister where name like '%"+n+"%' and place like '%"+a+"%'"
     res = db.select(qry)
-    return render_template('admin/ViewStore.html', data=res)
+    return render_template('admin/vvstore.html', data=res)
+
+@app.route('/SearchStore_approved',methods=['post'])
+def SearchStore_approved():
+    n=request.form['textfield']
+    a = request.form['textfield2']
+    db = Db()
+    qry = "select * from storeregister where name like '%"+n+"%' and place like '%"+a+"%' and status='approved'"
+    res = db.select(qry)
+    return render_template('admin/ViewStoresapproved.html', data=res)
 
 @app.route('/ViewStore')
 def ViewStore():
     db = Db()
-    qry = "select * from storeregister order by store_id desc"
+    qry = "select * from storeregister  order by store_id desc"
     res = db.select(qry)
     print(qry)
-    return render_template('admin/ViewStore.html',data=res)
+    return render_template('admin/vvstore.html',data=res)
+
+@app.route('/ViewStore_approved')
+def ViewStore_approved():
+    db = Db()
+    qry = "select * from storeregister where status='approved' order by store_id desc"
+    res = db.select(qry)
+    print(qry)
+    return render_template('admin/ViewStoresapproved.html',data=res)
+@app.route('/reject_store/<id>')
+def reject_store(id):
+    db = Db()
+    qry = "update storeregister set status='rejected' where store_id ='"+id+"'"
+    res = db.update(qry)
+    print(qry)
+    return '''<script>alert('success');window.location='/ViewStore'</script>'''
+@app.route('/approve_store/<id>')
+def approve_store(id):
+    db = Db()
+    qry = "update storeregister set status='approved' where store_id ='"+id+"'"
+    res = db.update(qry)
+    print(qry)
+    return '''<script>alert('success');window.location='/ViewStore'</script>'''
+
 @app.route('/ViewStore_post',methods=['post'])
 def ViewStore_post():
     name = request.form['textfield']
@@ -336,7 +396,7 @@ def Storeregistration_post():
     res=db.insert(qry)
 
     # return render_template('store/store_index.html')
-    return '''<script> alert('Registered Succusfully '); window.location='/storehome'</script>'''
+    return '''<script> alert('Registered Succusfully '); window.location='/Login'</script>'''
 
 @app.route('/deleteProduct/<id>')
 def deleteProduct(id):
@@ -349,23 +409,83 @@ def deleteProduct(id):
 
 
 
+@app.route('/ViewProfile')
+def ViewProfile():
+    db = Db()
+    qry = "select * from storeregister where login_id='"+str(session["lid"])+"'"
+    res = db.selectOne(qry)
+    return render_template('store/ViewProfile.html',data=res)
+
+@app.route('/edit_profile/<id>')
+def edit_profile(id):
+    db=Db()
+    qry="select * from storeregister where store_id='"+id+"'"
+    res=db.selectOne(qry)
+
+    return render_template('store/edit_profile.html',data=res)
+
+@app.route('/edit_profile_post',methods=['post'])
+def edit_profile_post():
+    s_id = request.form['s_id']
+    name = request.form['textfield']
+    place = request.form['textfield2']
+    post = request.form['textfield3']
+    pin = request.form['textfield4']
+    mobilenumber = request.form['textfield5']
+    email = request.form['textfield6']
+
+    if 'file' in request.files:
+        image = request.files['file']
+        if image.filename!='':
+            import datetime
+            dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+            image.save(staticpath + "store\\" + dt + ".jpg")
+            path = "/static/store/" + dt + ".jpg"
+            db = Db()
+            qry = "update storeregister set name='" + name + "',place='" + place + "',post='" + post + "',pin='" + pin + "',mobilenumber='" + mobilenumber + "',email='" + email + "',image='" + path + "'where store_id='" + str(s_id) + "'"
+            res = db.update(qry)
+            return '''<script>alert('Updated');window.location='/ViewProfile'</script>'''
+        else:
+            db = Db()
+            qry = "update storeregister set name='" + name + "',place='" + place + "',post='" + post + "',pin='" + pin + "',mobilenumber='" + mobilenumber + "',email='" + email + "' where store_id='" + str(s_id) + "'"
+            res = db.update(qry)
+            return '''<script>alert('Updated');window.location='/ViewProfile'</script>'''
+    else:
+        db = Db()
+        qry = "update storeregister set name='" + name + "',place='" + place + "',post='" + post + "',pin='" + pin + "',mobilenumber='" + mobilenumber + "',email='" + email + "' where store_id='" + str(s_id) + "'"
+        res = db.update(qry)
+        return '''<script>alert('Updated');window.location='/ViewProfile'</script>'''
+
+
+
+
 @app.route('/AddProduct')
 def AddProduct():
     return render_template('store/AddProduct.html')
 @app.route('/AddProduct_post',methods=['post'])
 def AddProduct_post():
+
     name = request.form['textfield']
 
     price = request.form['textfield2']
     stock = request.form['textfield3']
     made_date = request.form['textfield4']
     image = request.files['file']
+    # storelid = session["lid"]
     import datetime
     dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+
+
+    # import datetime
+
+    # dt = datetime.date.strftime(made_date,"%m/%d/%y")
+    print('today date',dt)
     image.save(staticpath + "store\\" + dt + ".jpg")
     path = "/static/store/"+ dt + ".jpg"
     db = Db()
-    qry = "insert into product(name,price,stock,made_date,image)values('" + name + "','" + price + "','" + stock + "','" + made_date + "','" + path + "')"
+
+    storeid = session["lid"]
+    qry = "insert into product(name,price,stock,made_date,image,store_id)values('" + name + "','" + price + "','" + stock + "','" + made_date + "','" + path + "','" + str(storeid) + "')"
     res = db.insert(qry)
     return '''<script> alert('Added Succusfully '); window.location='/storehome'</script>'''
 
@@ -375,7 +495,7 @@ def AddProduct_post():
 def SearchProduct():
     n=request.form['textfield']
     db = Db()
-    qry = "select * from product where name like '%"+n+"%'"
+    qry = "select * from product where name like '%"+n+"%' and store_id='"+str(session["lid"])+"'"
     res = db.select(qry)
 
     return render_template('store/ViewProduct.html', data=res)
@@ -383,7 +503,7 @@ def SearchProduct():
 @app.route('/ViewProduct')
 def ViewProduct():
     db=Db()
-    qry="select * from product"
+    qry="select * from product where store_id='"+str(session["lid"])+"'"
     res=db.select(qry)
    
     return render_template('store/ViewProduct.html',data=res)
