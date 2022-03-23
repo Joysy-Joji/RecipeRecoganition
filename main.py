@@ -1,4 +1,5 @@
-from flask import Flask,render_template,request,session
+import tensorflow as tf, sys
+from flask import Flask, render_template, request, session, jsonify
 from DBConnection import Db
 app=Flask(__name__)
 app.secret_key="kk"
@@ -46,7 +47,173 @@ def login_post():
         
             
     
+#----------------------------------Android
+@app.route('/userregister_post',methods=['post'])
+def userlogin_post():
+    type = "user"
+    name = request.form['name']
+    place = request.form['place']
+    post = request.form['post']
+    pin = request.form['pin']
+    housename = request.form['housename']
+    email = request.form['email']
+    mobileno = request.form['mobileno']
+    password = request.form['password']
+    q = "insert into login(username,password,type)values('" + name + "','" + password + "','" + type + "')"
+    db = Db()
+    lid = db.insert(q)
+    qry = "insert into user_register(name,place,post,pin,house_name,email,mobile_no,password,login_id)values('" + name + "','" + place + "','" + post+ "','" + pin + "','" + housename + "','" + email + "','" + mobileno + "','" + password + "','" +str(lid) + "')"
+    res = db.insert(qry)
+    return jsonify(status="ok")
 
+@app.route('/image_post',methods=['post'])
+def image_post():
+
+    image = request.form['img']
+    import time , datetime
+    from encodings.base64_codec import base64_decode
+    import base64
+
+    a = base64.b64decode(image)
+    fh = open("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\vegetabletest\\abc.jpg", "wb")
+
+    fh.write(a)
+    fh.close()
+    print("...")
+
+    print("mmmm")
+    fn = "C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\vegetabletest\\abc.jpg"
+    image_data = tf.gfile.FastGFile(fn, 'rb').read()
+    label_lines = [line.rstrip() for line
+                   in tf.gfile.GFile(
+            "C:\\Users\\user\\PycharmProjects\\reciperecognation\\logs\\output_labels.txt")]
+    print("started")
+    # Unpersists graph from file
+    with tf.gfile.FastGFile(
+            "C:\\Users\\user\\PycharmProjects\\reciperecognation\\logs\\output_graph.pb",
+            'rb') as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+        _ = tf.import_graph_def(graph_def, name='')
+
+    with tf.Session() as sess:
+        # Feed the image_data as input to the graph and get first prediction
+        softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
+
+        predictions = sess.run(softmax_tensor, \
+                               {'DecodeJpeg/contents:0': image_data})
+
+        # Sort to show labels of first prediction in order of confidence
+        top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+        print("OOOOOOOOOOOOO")
+        print(predictions)
+        print("topk", top_k)
+        human_string = []
+        s=[]
+        for node_id in top_k:
+            score = predictions[0][node_id] * 100
+            score = round(score)
+
+            print("score---",score,predictions[0][node_id],node_id)
+
+            s.append(label_lines[node_id])
+            print("s--",s)
+
+            if score > 20.0:
+                # self.lb3.setText("the alphabet is  " + human_string)
+                # QMessageBox.about(self,"Classification", "The alphabet is-"+human_string+"," +str(score) + "")
+
+                print('%s.\n\nAlgorithm confidence = %.5f' % (human_string, score))
+
+                # human_string.append(label_lines[node_id])
+
+                val=label_lines[node_id]
+                print("human_string", human_string)
+                result = ""
+                if val == "1":
+                    result = "Raw Banana"
+                    human_string.append(result)
+                if val == "2":
+                    result = "Beans"
+                    human_string.append(result)
+                if val == "3":
+                    result = "Beet Root"
+                    human_string.append(result)
+                if val == "4":
+                    result = "Bitter Gourd"
+                    human_string.append(result)
+                if val == "5":
+                    result = "Brinjal"
+                    human_string.append(result)
+                if val == "6":
+                    result = "Brocoli"
+                    human_string.append(result)
+                if val == "7":
+                        result = "Cabbege"
+                        human_string.append(result)
+                if val == "8":
+                    result = "Capsicum"
+                    human_string.append(result)
+                if val== "9":
+                        result = "Carrot"
+                        human_string.append(result)
+                if val == "10":
+                    result = "Cauliflower"
+                    human_string.append(result)
+                if val == "18":
+                        result = "Ladies Finger"
+                        human_string.append(result)
+                if val == "19":
+                    result = "Onion"
+                    human_string.append(result)
+                if val == "20":
+                        result = "Potato"
+                        human_string.append(result)
+                if val == "21":
+                    result = "Pumpkin"
+                    human_string.append(result)
+                if val == "25":
+                        result = "Tomato"
+                        human_string.append(result)
+
+
+
+
+
+
+    print(human_string)
+    res=""
+    for i in human_string:
+        res=res+"\n "+i
+
+    print(res,"*****************")
+    return jsonify(status="ok", res=res)
+
+#
+# return jsonify(status='ok')
+
+@app.route('/user_viewprofile',methods=['post'])
+def user_viewprofile():
+     lid=request.form["lid"]
+     db=Db()
+     qry="select * from user_register where login_id='"+lid+"'"
+     res=db.selectOne(qry)
+
+     return jsonify(status="ok",name=res['name'],place=res['place'],post=res['post'],pin=res['pin'],house_name=res['house_name'],mobile_no=res['mobile_no'],email=res['email'])
+
+@app.route('/userlogin_post1', methods=['post'])
+def userlogin_post1():
+    name = request.form['name']
+    password = request.form['password']
+    db = Db()
+    qry = "select * from login where username='" + name + "' and password='" + password + "'"
+    res = db.selectOne(qry)
+    if res != None:
+        # session["lid"] = res["login_id"]
+        if res['type'] == 'user':
+            return jsonify(status="ok",lid=res["login_id"])
+    else:
+        return jsonify(status="invalid")
 
 
 @app.route('/adminhome')
@@ -94,18 +261,15 @@ def AddVegetables():
 @app.route('/AddVegetables_post',methods=['post'])
 def AddVegetables_post():
     name = request.form['textfield']
-    color = request.form['textfield2']
-    shape = request.form['textfield3']
-    size = request.form['textfield4']
-    texture = request.form['textfield5']
+
     image = request.files['file']
     # storelid=session["lid"]
     import datetime
     dt=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     image.save(staticpath+"veg\\"+dt+".jpg")
-    path="/static/veg"+dt+".jpg"
+    path="/static/veg/"+dt+".jpg"
     db=Db()
-    qry="insert into vegetable(name,color,shape,size,texture,image)values('"+name+"','"+color+"','"+shape+"','"+size+"','"+texture+"','"+path+"')"
+    qry="insert into vegetable(name,image)values('"+name+"','"+path+"')"
     res=db.insert(qry)
     return 'ok'
 @app.route('/EditVegetables/<id>')
@@ -340,12 +504,13 @@ def ViewStore_post():
     return 'ok'
 
 
+
 @app.route('/ViewVegetables')
 def ViewVegetables():
     db=Db()
     qry="select * from vegetable"
     res=db.select(qry)
-    print(res)
+
     return render_template('admin/ViewVegetables.html',data=res)
 
 
@@ -356,6 +521,8 @@ def ViewVegetables():
 def ViewVegetables_post():
     name = request.form['textfield']
     return 'ok'
+
+
 
 
 
@@ -385,6 +552,7 @@ def Storeregistration_post():
     email = request.form['textfield6']
     password = request.form['textfield7']
     image = request.files['file']
+
     import datetime
     dt=datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     image.save(staticpath+"store\\"+dt+".jpg")
@@ -404,7 +572,7 @@ def deleteProduct(id):
     qry = "delete from product where product_id='" + str(id) + "'"
     res = db.delete(qry)
 
-    return render_template('store/ViewProduct.html')
+    return ViewProduct()
 
 
 
@@ -474,6 +642,7 @@ def AddProduct_post():
     # storelid = session["lid"]
     import datetime
     dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    dte = datetime.datetime.now().strftime('%d-%m-%Y')
 
 
     # import datetime
@@ -485,9 +654,9 @@ def AddProduct_post():
     db = Db()
 
     storeid = session["lid"]
-    qry = "insert into product(name,price,stock,made_date,image,store_id)values('" + name + "','" + price + "','" + stock + "','" + made_date + "','" + path + "','" + str(storeid) + "')"
+    qry = "insert into product(name,price,stock,made_date,image,store_id,adddate)values('" + name + "','" + price + "','" + stock + "','" + made_date + "','" + path + "','" + str(storeid) + "','"+str(dte)+"')"
     res = db.insert(qry)
-    return '''<script> alert('Added Succusfully '); window.location='/storehome'</script>'''
+    return '''<script> alert('Added Succusfully '); window.location='/AddProduct'</script>'''
 
 
 
@@ -505,8 +674,16 @@ def ViewProduct():
     db=Db()
     qry="select * from product where store_id='"+str(session["lid"])+"'"
     res=db.select(qry)
-   
-    return render_template('store/ViewProduct.html',data=res)
+    ls=[]
+    for i in res:
+        ss=i['made_date']
+        yy=str(ss)
+        cc=yy.split("-")
+        print(cc)
+        so_date=cc[2]+"-"+cc[1]+"-"+cc[0]
+        print(so_date)
+        ls.append({"name":i['name'],"price":i['price'],"stock":i['stock'],"made_date":so_date,"image":i['image'],"product_id":str(i['product_id']),"adddate":i['adddate']})
+    return render_template('store/ViewProduct.html',data=ls)
 
 
 
@@ -530,4 +707,4 @@ def ViewProduct_post():
 
 
 if __name__=='__main__':
-   app.run(debug=True)
+   app.run(debug=True, host="0.0.0.0", port=1234)
