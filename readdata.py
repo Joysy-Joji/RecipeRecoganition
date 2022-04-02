@@ -17,56 +17,60 @@ for i in data:
 
     except:
         pass
+icre_list=[]
 for i in inclist:
 
-
     d1 = i.split("-")
-    # d2 = i.split("(")
 
-    # print(d1)
-    # print(d1[0].replace('/',""))
     d2= d1[0].replace("/","").replace("teaspoon","").replace("tablespoon","").replace("cup","").replace(" ","").replace("Water","").replace("to","").replace("kg","").replace("s","").replace("cup","").replace("gram","").replace("inch","").replace("pinch","").replace("नमक","")
-
-
     d3=d2.split("(")
-    # print(d3[0])
+    # d4=d3.split(")")
+    # print(d3)
 
-    v=d3[0]
-    print(v)
-    # v1= []
-    # for x in v:
-    #
-    #     if x not in v1:
-    #         v1.append(x)
-    #
-    # for x in v1:
-    #     print(v1)
+    # am=[]
+    # icre_list.append(d3[0])
+    # print(icre_list[0])
+unique_list = []
 
-    # v=list(d3)
-    # print(v)
-    # x=[]
-    # r=len(d3)
-    # print(r)
-    # for i in range(len(d3)):
-    #     print(i)
-    # ny=[]
-    # ny.append(d3[0])
-    # print("====",ny)
-    # # k=len(d3[0])
-    # #
-    # unique_list = []
-    #
-    # for x in ny:
-    #     if x  in unique_list:
-    #         pass
-    #     else:
-    #         unique_list.append(x)
-    #     print("**********************************************************************************************",unique_list)
+for x in icre_list:
+        if x  in unique_list:
+            pass
+        else:
+            unique_list.append(x)
+        # print("**********************************************************************************************",unique_list)
+
+#================================item========================================================================================
+
+df1 = pd.read_csv("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\recipedataset _ orginal.csv", usecols = ['TranslatedRecipeName'])
+data1=df1.TranslatedRecipeName
+# print(data)
+recipelist=[]
+for i in data1:
+    # print(i)
+    # recplist=[]
+    a=i.split("-")
+    b = a[0].replace(" ", "")
+    recipelist.append(b)
+# print(recipelist)
+
+########################################################################################
+df = pd.read_csv("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\recipedataset _ orginal.csv", usecols = ['TranslatedIngredients'])
+data=df.TranslatedIngredients
+# print(data)
+mainlist=[]
+for i in data:
+    inclist = []
+    # print(i.split(","))
+    try:
+        # print(i)
+        d1=i.split(",")
+        for inc in d1:
+            result = ''.join([i for i in inc if not i.isdigit()])
+            inclist.append(result)
+        mainlist.append(inclist)
 
 
 
-
-
-
-
-
+    except:
+        pass
+print(mainlist)
