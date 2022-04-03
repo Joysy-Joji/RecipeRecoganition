@@ -1,4 +1,5 @@
 import tensorflow as tf, sys
+import pandas as pd
 from flask import Flask, render_template, request, session, jsonify
 from DBConnection import Db
 app=Flask(__name__)
@@ -187,10 +188,67 @@ def image_post():
         res=res+"\n "+i
 
     print(res,"*****************")
-    return jsonify(status="ok", res=res)
 
-#
-# return jsonify(status='ok')
+    df = pd.read_csv("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\p.csv",
+                     usecols=['TranslatedIngredients'])
+    data = df.TranslatedIngredients
+    # print(data)
+    inclist = []
+    for i in data:
+        # print(i.split(","))
+        try:
+            d1 = i.split(",")
+            for inc in d1:
+                result = ''.join([i for i in inc if not i.isdigit()])
+                inclist.append(result)
+
+        except:
+            pass
+    icre_list = []
+    for i in inclist:
+        d1 = i.split("-")
+
+        d2 = d1[0].replace("/", "").replace("teaspoon", "").replace("tablespoon", "").replace(" cup", "").replace(" ",
+                                                                                                                  "").replace(
+            "Water", "").replace("to", "").replace("kg", "").replace("s", "").replace("cup", "").replace("gram",
+                                                                                                         "").replace(
+            "inch", "").replace("pinch", "").replace("नमक", "").replace("-/", "").replace("-/", "").replace("-",
+                                                                                                            "").replace(
+            "/", "").replace("Water", "")
+        d3 = d2.split("(")
+        # d4=d3.split(")")
+        # print(d3)
+
+        # am=[]
+        icre_list.append(d3[0])
+        # print(icre_list[0])
+    unique_list = []
+
+    for x in icre_list:
+        if x in unique_list:
+            pass
+        else:
+            unique_list.append(x)
+    # print("**********************************************************************************************unique",
+    #       unique_list)
+
+    vectorstest = []
+    # print(unique_list)
+
+    vv = []
+    for j in range(len(unique_list)):
+        # print("-------------")
+        p = res.split(",")
+
+        if unique_list[j] in p:
+            # print(unique_list[j], "======")
+            vv.append(1)
+        else:
+            vv.append(0)
+    vectorstest.append(vv)
+    print(vectorstest)
+
+    return jsonify(status="ok", res=res)
 
 @app.route('/user_viewprofile',methods=['post'])
 def user_viewprofile():
@@ -629,12 +687,14 @@ def edit_profile_post():
 
 @app.route('/AddProduct')
 def AddProduct():
-    return render_template('store/AddProduct.html')
+    c=Db()
+    qry="SELECT CURDATE() AS cur"
+    res=c.selectOne(qry)
+    return render_template('store/AddProduct.html',cur=res['cur'])
 @app.route('/AddProduct_post',methods=['post'])
 def AddProduct_post():
 
     name = request.form['textfield']
-
     price = request.form['textfield2']
     stock = request.form['textfield3']
     made_date = request.form['textfield4']
@@ -643,16 +703,12 @@ def AddProduct_post():
     import datetime
     dt = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     dte = datetime.datetime.now().strftime('%d-%m-%Y')
-
-
     # import datetime
-
     # dt = datetime.date.strftime(made_date,"%m/%d/%y")
-    print('today date',dt)
+
     image.save(staticpath + "store\\" + dt + ".jpg")
     path = "/static/store/"+ dt + ".jpg"
     db = Db()
-
     storeid = session["lid"]
     qry = "insert into product(name,price,stock,made_date,image,store_id,adddate)values('" + name + "','" + price + "','" + stock + "','" + made_date + "','" + path + "','" + str(storeid) + "','"+str(dte)+"')"
     res = db.insert(qry)

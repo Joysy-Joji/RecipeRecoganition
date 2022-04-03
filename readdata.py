@@ -25,7 +25,7 @@ for i in inclist:
     d2= d1[0].replace("/","").replace("teaspoon","").replace("tablespoon","").replace("cup","").replace(" ","").replace("Water","").replace("to","").replace("kg","").replace("s","").replace("cup","").replace("gram","").replace("inch","").replace("pinch","").replace("नमक","")
     d3=d2.split("(")
     # d4=d3.split(")")
-    # print(d3)
+    print(d3)
 
     # am=[]
     # icre_list.append(d3[0])
@@ -74,3 +74,11 @@ for i in data:
     except:
         pass
 print(mainlist)
+print("--------------------------------------------------------")
+for i in mainlist:
+
+    print(i)
+    d1 = i.split(",")
+    d2= d1[0].replace("/","").replace("teaspoon","").replace("tablespoon","").replace("cup","").replace(" ","").replace("Water","")
+
+    print(d2)
