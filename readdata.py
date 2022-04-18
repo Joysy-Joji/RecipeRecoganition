@@ -73,12 +73,12 @@ for i in data:
 
     except:
         pass
-print(mainlist)
+# print(mainlist)
 print("--------------------------------------------------------")
 for i in mainlist:
 
     print(i)
-    d1 = i.split(",")
+    # d1 = i.split(",")
     d2= d1[0].replace("/","").replace("teaspoon","").replace("tablespoon","").replace("cup","").replace(" ","").replace("Water","")
 
-    print(d2)
+    # print(d2)

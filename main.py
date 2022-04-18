@@ -2,6 +2,7 @@ import tensorflow as tf, sys
 import pandas as pd
 from flask import Flask, render_template, request, session, jsonify
 from DBConnection import Db
+from sklearn.ensemble import RandomForestClassifier
 app=Flask(__name__)
 app.secret_key="kk"
 staticpath="C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\"
@@ -66,6 +67,47 @@ def userlogin_post():
     qry = "insert into user_register(name,place,post,pin,house_name,email,mobile_no,password,login_id)values('" + name + "','" + place + "','" + post+ "','" + pin + "','" + housename + "','" + email + "','" + mobileno + "','" + password + "','" +str(lid) + "')"
     res = db.insert(qry)
     return jsonify(status="ok")
+
+
+
+@app.route('/search_recipe',methods=['post'])
+def search_recipe():
+    dff = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                        usecols=['RECIPENAME'])
+    data = dff.RECIPENAME
+    # print(data)
+    namelist = []
+    for i in data:
+        namelist.append(i)
+
+    print("------------------------------------0000---------------------------",namelist)
+    df = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                        usecols=['RECIPEURL'])
+    dataa = df.RECIPEURL
+    # print(data)
+    urllist = []
+    for i in dataa:
+        urllist.append(i)
+    dff = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                           usecols=['INGREDIENTS'])
+
+    data = dff.INGREDIENTS
+    inglist=[]
+    for i in data:
+        inglist.append(i)
+    dfff = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                        usecols=['DESCRIPTION'])
+    dataaa = dfff.DESCRIPTION
+    deslist=[]
+    for i in dataaa:
+        deslist.append(i)
+    s = []
+    for ss in range(len(namelist)):
+        s.append({"recipe":namelist[ss],"ingredients":inglist[ss],"url":urllist[ss],"desc":deslist[ss]})
+    return jsonify(status="ok",k=namelist,ress=namelist,ingds=inglist,urls=urllist,descs=deslist,mydata=s)
+
+
+
 
 @app.route('/image_post',methods=['post'])
 def image_post():
@@ -132,49 +174,49 @@ def image_post():
                 print("human_string", human_string)
                 result = ""
                 if val == "1":
-                    result = "Raw Banana"
+                    result = "banana"
                     human_string.append(result)
                 if val == "2":
-                    result = "Beans"
+                    result = "beans"
                     human_string.append(result)
                 if val == "3":
-                    result = "Beet Root"
+                    result = "beetroot"
                     human_string.append(result)
                 if val == "4":
-                    result = "Bitter Gourd"
+                    result = "bitter gourd"
                     human_string.append(result)
                 if val == "5":
-                    result = "Brinjal"
+                    result = "brinjal"
                     human_string.append(result)
                 if val == "6":
-                    result = "Brocoli"
+                    result = "brocoli"
                     human_string.append(result)
                 if val == "7":
-                        result = "Cabbege"
+                        result = "cabbage"
                         human_string.append(result)
                 if val == "8":
-                    result = "Capsicum"
+                    result = "capsicum"
                     human_string.append(result)
                 if val== "9":
-                        result = "Carrot"
+                        result = "carrot"
                         human_string.append(result)
                 if val == "10":
-                    result = "Cauliflower"
+                    result = "cauliflower"
                     human_string.append(result)
                 if val == "18":
-                        result = "Ladies Finger"
+                        result = "lady finger"
                         human_string.append(result)
                 if val == "19":
-                    result = "Onion"
+                    result = "onion"
                     human_string.append(result)
                 if val == "20":
-                        result = "Potato"
+                        result = "potato"
                         human_string.append(result)
                 if val == "21":
-                    result = "Pumpkin"
+                    result = "pumpkin"
                     human_string.append(result)
                 if val == "25":
-                        result = "Tomato"
+                        result = "tomato"
                         human_string.append(result)
 
 
@@ -183,72 +225,184 @@ def image_post():
 
 
     print(human_string)
-    res=""
+    resqq=[]
     for i in human_string:
-        res=res+"\n "+i
+        resqq.append(i.lower())
+        print(resqq)
 
-    print(res,"*****************")
 
-    df = pd.read_csv("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\p.csv",
-                     usecols=['TranslatedIngredients'])
-    data = df.TranslatedIngredients
+    print(resqq,"*****************")
+    resq=""
+    for i in human_string:
+        resq = resq + "\n " + i
+    print(resq, "*****************")
+
+
+    #--------------------------RECIPE URL------------------
+    dff = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                        usecols=['RECIPEURL'])
+    data = dff.RECIPEURL
+    # print(data)
+    urllist = []
+    for i in data:
+
+        urllist.append(i)
+    print(urllist)
+
+
+
+    #-----------------------RECIPE DESCRIPTION-----------------
+    dff = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                        usecols=['DESCRIPTION'])
+    data = dff.DESCRIPTION
+    descriptionlist = []
+    for i in data:
+        descriptionlist.append(i)
+    print(descriptionlist)
+
+
+
+
+
+
+    dff = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                        usecols=['INGREDIENTS'])
+    data = dff.INGREDIENTS
     # print(data)
     inclist = []
     for i in data:
-        # print(i.split(","))
         try:
             d1 = i.split(",")
             for inc in d1:
-                result = ''.join([i for i in inc if not i.isdigit()])
-                inclist.append(result)
-
+                # result = ''.join([i for i in inc if not i.isdigit()])
+                inclist.append(inc)
         except:
             pass
-    icre_list = []
-    for i in inclist:
-        d1 = i.split("-")
-
-        d2 = d1[0].replace("/", "").replace("teaspoon", "").replace("tablespoon", "").replace(" cup", "").replace(" ",
-                                                                                                                  "").replace(
-            "Water", "").replace("to", "").replace("kg", "").replace("s", "").replace("cup", "").replace("gram",
-                                                                                                         "").replace(
-            "inch", "").replace("pinch", "").replace("नमक", "").replace("-/", "").replace("-/", "").replace("-",
-                                                                                                            "").replace(
-            "/", "").replace("Water", "")
-        d3 = d2.split("(")
-        # d4=d3.split(")")
-        # print(d3)
-
-        # am=[]
-        icre_list.append(d3[0])
-        # print(icre_list[0])
     unique_list = []
-
-    for x in icre_list:
+    for x in inclist:
         if x in unique_list:
             pass
         else:
             unique_list.append(x)
-    # print("**********************************************************************************************unique",
-    #       unique_list)
+    print("UNIQ------------", unique_list)
 
     vectorstest = []
-    # print(unique_list)
+    print(unique_list)
 
     vv = []
     for j in range(len(unique_list)):
         # print("-------------")
-        p = res.split(",")
+        # p = res.split(",")
 
-        if unique_list[j] in p:
-            # print(unique_list[j], "======")
+        if unique_list[j] in resq:
+            print(unique_list[j], "======")
             vv.append(1)
         else:
             vv.append(0)
     vectorstest.append(vv)
+    print("_________________vectortest",resq)
     print(vectorstest)
+    # #______________________________Recepie list______________________________________
+    df = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                       usecols=['RECIPENAME'])
+    data1 = df.RECIPENAME
+    # print(data)
+    import math
+    recipelist = []
+    for i in data1:
+        print(i, type(i), "--------------------")
+        # recplist=[]
 
-    return jsonify(status="ok", res=res)
+        try:
+            a = i.split("-")
+            b = a[0]
+            recipelist.append(b)
+        except:
+            pass
+    print(recipelist)
+    # #_______________________________________________________recepie list end___________________
+    # #______________________________________________________traning icrediance vector_______________________
+    dff = pd.read_excel("C:\\Users\\user\\PycharmProjects\\reciperecognation\\static\\dataset\\sample_dataset.xlsx",
+                        usecols=['INGREDIENTS'])
+    data = dff.INGREDIENTS
+
+    # print(data)
+    mainlist = []
+    for i in data:
+        inclist = []
+        # print(i.split(","))
+        try:
+            # print(i)
+            d1 = i.split(",")
+            for inc in d1:
+                result = ''.join([i for i in inc if not i.isdigit()])
+                inclist.append(result)
+            mainlist.append(inclist)
+
+
+
+        except:
+            pass
+
+
+    lst=[]
+    recid=[]
+    ingd=[]
+    urls=[]
+    descs=[]
+    # c=0
+    for i in range(len(recipelist)):
+        c = 0
+        recipe=recipelist[i]
+        myinc=mainlist[i]
+        ur=urllist[i]
+        dd=descriptionlist[i]
+        print("recipe",recipe,"myinc",myinc)
+
+        for i in myinc:
+            if i in resq:
+                c=c+1
+        if c>0:
+            lst.append(c)
+            recid.append(recipe)
+            ingd.append(myinc)
+            urls.append(ur)
+            descs.append(dd)
+
+    print(lst)
+    print("cntrrrrr")
+    for i in range(len(recid)):
+        for j in range(len(recid)):
+            if lst[i]> lst[j]:
+                temp=recid[i]
+                recid[i]=recid[j]
+                recid[j]=temp
+
+                temp=lst[i]
+                lst[i]=lst[j]
+                lst[j]=temp
+
+                temp=ingd[i]
+                ingd[i]=ingd[j]
+                ingd[j]=temp
+
+                temp = urls[i]
+                urls[i] = urls[j]
+                urls[j] = temp
+
+                temp = descs[i]
+                descs[i] = descs[j]
+                descs[j] = temp
+
+    s=[]
+    for ss in range(len(recid)):
+        a={"recipe":recid[ss],"ingredients":ingd[ss],"url":urls[ss],"desc":descs[ss]}
+        s.append(a)
+
+    print(s)
+    ing_v=str(ingd)
+    print("-------9999------",ing_v)
+    return jsonify(status="ok",res=recid,ingds=ingd,ress=resq,urls=urls,descs=descs,mydata=s)
 
 @app.route('/user_viewprofile',methods=['post'])
 def user_viewprofile():
