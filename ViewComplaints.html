@@ -14,9 +14,9 @@
 <!--<caption>VIEW COMPLAINTS</caption>-->
 <tr>
   <td width="900"><label>From Date</label>
-    <input name="date" type="date"  name="textfield" class="form-control"  /></td>
+    <input  type="date"  name="f_date" class="form-control"  /></td>
   <td width="899"><label>To Date</label>
-  <input name="date" type="date" name="textfield2" class="form-control"  /></td>
+  <input  type="date" name="t_date" class="form-control"  /></td>
 <td width="167"><button>SEARCH</button></td></tr>
 </table>
 
@@ -24,13 +24,13 @@
 <table width="501" height="160" border="1" class="table table-dark mt-5">
   <tr>
     <td width="40" height="46">S.No</td>
-    <td width="160">Complaints</td>
+    <td width="160">Reviews</td>
 	 <td width="160">User Name</td>
 	  <td width="160">User Email</td>
 
-	<td width="60">Status</td>
+<!--	<td width="60">Status</td>-->
 	 <td width="260">Date</td>
-	<td width="60">Action</td>
+<!--	<td width="60">Action</td>-->
 	
    
     
@@ -41,12 +41,12 @@
   <tr>
     <td>{{ loop.index }}</td>
 
-	 <td>{{ i['complaint']  }}</td>
+	 <td>{{ i['content']  }}</td>
        <td>{{ i['name']  }}</td>
       <td>{{ i['email']  }}</td>
-       <td>{{ i['status']  }}</td>
+<!--       <td>{{ i['status']  }}</td>-->
   <td>{{ i['date']  }}</td>
-       <td><p><a href= "/Reply" class="btn btn-primary">Reply</a><br />
+<!--       <td><p><a href= "/Reply" class="btn btn-primary">Reply</a><br />-->
 
      </p></td>
   </tr>
